@@ -7,8 +7,7 @@ from PyQt5.QtGui import QPainter, QPen, QImage
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QFileDialog
 from PyQt5.QtCore import Qt, QRectF, QPointF
 
-from PIL import ImageGrab                                                  # +++
-import numpy as np                                                         # +++
+                                                    # +++
 
 
 
