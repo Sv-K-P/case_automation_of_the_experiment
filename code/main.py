@@ -7,12 +7,6 @@ from PyQt5.QtGui import QPainter, QPen, QImage
 from PyQt5.QtWidgets import QMainWindow, QApplication, QAction, QFileDialog
 from PyQt5.QtCore import Qt, QRectF, QPointF
 
-                                                    # +++
-
-
-
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
