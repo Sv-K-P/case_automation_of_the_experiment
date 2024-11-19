@@ -27,7 +27,11 @@ class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
         """
         Вспомогательный метод для изменения текущего выбранного элемента.
         """
-        self.idx = self.DeviceList.row(self.DeviceList.selectedItems()[0])
+        if (self.DeviceList.count() > 1):
+            print(self.DeviceList.count(), self.DeviceList.selectedItems())
+            self.idx = self.DeviceList.row(self.DeviceList.selectedItems()[0])
+        else:
+            self.idx = -1
         
     def new_connection(self):
         """
@@ -51,9 +55,12 @@ class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
         """
         Вызов метода завершения сессии, удаление объекта Device, соответсвующему выбранному устройству
         """
-        list_connection[self.idx].close_connection()
-        self.DeviceList.takeItem(self.idx)
-        list_connection.pop(self.idx)
+        if (self.DeviceList.count() > 0):
+            if (self.DeviceList.count() - 1 < self.idx):
+                self.idx = self.DeviceList.count() - 1
+            list_connection[self.idx].close_connection()
+            self.DeviceList.takeItem(self.idx)
+            list_connection.pop(self.idx)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)  

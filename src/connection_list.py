@@ -1,6 +1,6 @@
 # connection_list.py
 
-
+from defSettingsWindow import ExampleSet
 
 class Device():
     """
@@ -15,7 +15,11 @@ class Device():
         self.name = name
 
     def open_settings(self):
-        pass
+        """
+        Вызов окна с настройками
+        """
+        self.window_settings = ExampleSet()
+        self.window_settings.show()
     
     def build_connection(self):
         """
