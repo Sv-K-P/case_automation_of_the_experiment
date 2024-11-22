@@ -17,6 +17,8 @@ class Device():
     def open_settings(self):
         """
         Вызов окна с настройками
+
+        :bug При нажатии кнопки с пустым QListWidget
         """
         self.window_settings = ExampleSet()
         self.window_settings.show()

@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SettingsWindow(object):
     def setupUi(self, SettingsWindow):
         SettingsWindow.setObjectName("SettingsWindow")
-        SettingsWindow.resize(800, 600)
+        SettingsWindow.resize(800, 455)
         self.centralwidget = QtWidgets.QWidget(SettingsWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -40,7 +40,10 @@ class Ui_SettingsWindow(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.TabSettings.addTab(self.GeneralSettings, "")
         self.AreaSettings = QtWidgets.QWidget()
+        self.AreaSettings.setMaximumSize(QtCore.QSize(778, 16777215))
         self.AreaSettings.setObjectName("AreaSettings")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.AreaSettings)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.TabSettings.addTab(self.AreaSettings, "")
         self.verticalLayout.addWidget(self.TabSettings)
         SettingsWindow.setCentralWidget(self.centralwidget)
@@ -49,7 +52,7 @@ class Ui_SettingsWindow(object):
         SettingsWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(SettingsWindow)
-        self.TabSettings.setCurrentIndex(0)
+        self.TabSettings.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(SettingsWindow)
 
     def retranslateUi(self, SettingsWindow):
