@@ -2,37 +2,14 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtCore import Qt, QRectF, QPointF
+from PyQt5.Qt import *
 
+from test_for_me import *
 from qtdesign.settings_window import Ui_SettingsWindow
 
 point_filename = 'img/41uu2.png'
 
-
-class smallRectangle(QtWidgets.QGraphicsRectItem):
-    def __init__(self, x, y, w=10, h=10):
-        super(smallRectangle, self).__init__(0, 0, w, h)
-        self.setPen(QtGui.QPen(QtCore.Qt.red, 2))
-        self.setFlags(QtWidgets.QGraphicsItem.ItemIsSelectable
-            | QtWidgets.QGraphicsItem.ItemIsMovable
-            | QtWidgets.QGraphicsItem.ItemIsFocusable
-            | QtWidgets.QGraphicsItem.ItemSendsGeometryChanges
-            | QtWidgets.QGraphicsItem.ItemSendsScenePositionChanges)
-        self.setPos(QtCore.QPointF(x, y))
-
-    def mouseMoveEvent(self, event): # обработчик нажатия и движения мыши
-        if event.buttons() & QtCore.Qt.LeftButton:
-            super(smallRectangle, self).mouseMoveEvent(event)
-            # print(event.pos().toPoint())
-
-    def paint(self, painter, option, widget):
-        painter.setPen(self.pen())
-        painter.setBrush(self.brush())
-        if option.state & QtWidgets.QStyle.State_Selected: # изменение цвета при нажатии
-            pen = self.pen()
-            pen.setColor(QtCore.Qt.blue)
-            painter.setPen(pen)
-            painter.setBrush(QtCore.Qt.NoBrush)
-        painter.drawRect(self.boundingRect())
 
 class GraphicsView(QtWidgets.QGraphicsView):
     """
@@ -40,7 +17,10 @@ class GraphicsView(QtWidgets.QGraphicsView):
     """
     def __init__(self, parent=None):
         super().__init__(QtWidgets.QGraphicsScene(), parent)
+
+
         self.pixmap_item = self.scene().addPixmap(QtGui.QPixmap())
+
         self.pixmap_item.setShapeMode(QtWidgets.QGraphicsPixmapItem.BoundingRectShape)
 
         self.setAlignment(QtCore.Qt.AlignCenter)
@@ -48,8 +28,10 @@ class GraphicsView(QtWidgets.QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
     def set_image(self, pixmap):
+        self.setFixedSize(pixmap.size())
         self.pixmap_item.setPixmap(pixmap)
-        self.fitInView(self.pixmap_item, QtCore.Qt.KeepAspectRatio)
+
+
 
 class CropView(GraphicsView):
     """
@@ -59,36 +41,39 @@ class CropView(GraphicsView):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.flag = True
         self.point_items = [] # массив с вершинами прямоугольника
+        self.selection = QRubberBand(QRubberBand.Rectangle, self)
 
-    def mousePressEvent(self, event: QtGui.QMouseEvent | None) -> None:
-        print(event.pos().x(), event.pos().y())
-        point = smallRectangle(event.pos().x(), event.pos().y())
-        self.scene().addItem(point)
-        self.point_items.append(point)
+    def mousePressEvent(self, event):
+        if event.buttons() == Qt.LeftButton and self.flag:
+            self.start = event.pos()
         return super().mousePressEvent(event)
 
-    def crop(self, old_points: list):
-        points = [old_points[0], QtCore.QPoint(old_points[1].x(), old_points[0].y()) , old_points[1], QtCore.QPoint(old_points[0].x(), old_points[1].y())]
-        print(points) # отладочное
-        
-        polygon = QtGui.QPolygonF(points)
-        path = QtGui.QPainterPath()
-        path.addPolygon(polygon)
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton and self.flag:
+            self.end = event.pos()
+            self.selection.setGeometry(QtCore.QRect(self.start, self.end).normalized())
+            self.selection.show()
+        return super().mouseMoveEvent(event)
 
-        source = self.pixmap_item.pixmap()
 
-        r = path.boundingRect().toRect().intersected(source.rect())
+    def mouseReleaseEvent(self, event):
+        if self.flag:
 
-        pixmap = QtGui.QPixmap(source.size())
-        pixmap.fill(QtCore.Qt.transparent)
-        painter = QtGui.QPainter(pixmap)
-        painter.setClipPath(path)
-        painter.drawPixmap(QtCore.QPoint(), source, source.rect())
-        painter.end()
-        result = pixmap.copy(r)
-        self.resultChanged.emit(result)
-        self.resulted = result
+            self.flag = False
+            self.end = event.pos()
+
+            self.selection.hide()
+            size = QRectF(QPointF(min(self.start.x(), self.end.x()), min(self.start.y(), self.start.y())),
+                          QPointF(max(self.start.x(), self.end.x()), max(self.start.y(), self.end.y())))
+            CropItem(self.pixmap_item, size)
+        return super().mouseReleaseEvent(event)
+
+    def make(self):
+        self.flag = True
+
+
 
 class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
     """
@@ -103,7 +88,7 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
 
         # Дополнение дизайна #
         self.left_view = CropView()
-        self.rigth_view = GraphicsView()
+
 
         self.HLayoutImage = QtWidgets.QHBoxLayout() # добавление горизонтальных компоновщиков для картинок и для кнопок
         self.HLayoutImage.setObjectName("HLayoutImage")
@@ -113,25 +98,25 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
         self.verticalLayout_3.addLayout(self.HLayoutButton)
 
         self.HLayoutImage.addWidget(self.left_view) # встраивание областей с изображениями
-        self.HLayoutImage.addWidget(self.rigth_view)
+
 
         self.LoadOriginalImage = QtWidgets.QPushButton(self.GeneralSettings) # определение кнопок
         self.LoadOriginalImage.setObjectName("LoadOriginalImage")
         self.HLayoutButton.addWidget(self.LoadOriginalImage)
-        self.SaveCroppedImage = QtWidgets.QPushButton(self.GeneralSettings)
-        self.SaveCroppedImage.setObjectName("SaveCroppedImage")
-        self.HLayoutButton.addWidget(self.SaveCroppedImage)
+        self.MakeCroppedImage = QtWidgets.QPushButton(self.GeneralSettings)
+        self.MakeCroppedImage.setObjectName("SaveCroppedImage")
+        self.HLayoutButton.addWidget(self.MakeCroppedImage)
         self.DeleteCroppedImage = QtWidgets.QPushButton(self.GeneralSettings)
         self.DeleteCroppedImage.setObjectName("DeleteCroppedImage")
         self.HLayoutButton.addWidget(self.DeleteCroppedImage)
 
         _translate = QtCore.QCoreApplication.translate # настройка надписей
         self.LoadOriginalImage.setText(_translate("SettingsWindow", "Получить изображение"))
-        self.SaveCroppedImage.setText(_translate("SettingsWindow", "Сохранить область"))
+        self.MakeCroppedImage.setText(_translate("SettingsWindow", "Создать область"))
         self.DeleteCroppedImage.setText(_translate("SettingsWindow", "Удалить область"))
 
         self.LoadOriginalImage.clicked.connect(self.takeImage) # настройка действий для кнопок
-        self.SaveCroppedImage.clicked.connect(self.ViewCropped)
+        self.MakeCroppedImage.clicked.connect(self.left_view.make)
         ######################
 
     @QtCore.pyqtSlot()
@@ -155,4 +140,5 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
 
         :bug Если картинка не выбрана или не обозначены все 2 точки
         """
-        self.rigth_view.set_image(self.left_view.resulted)
+        self.rigth_view.set_image(self.left_view.resultChanged)
+

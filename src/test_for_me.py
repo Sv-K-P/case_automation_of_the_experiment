@@ -187,6 +187,7 @@ class area_selection(QGraphicsItem):
 
     def doResize(self):
         self.parentItem().create_path()
+        self.parentItem().return_cords()
         self.updatePosition()
 
     # функция необходимая по стандартам библиотеки, необходима для корректной работы программы
@@ -208,27 +209,34 @@ class area_selection(QGraphicsItem):
 
         painter.drawRect(self.background_selection)
 
+    def close(self):
+        for item in self.list_of_button:
+            item.hide()
+
+    def open(self):
+        for item in self.list_of_button:
+            item.show()
+
 
 class CropItem(QGraphicsPathItem):
-    def __init__(self, parent):
+    def __init__(self, parent, size):
         QGraphicsPathItem.__init__(self, parent)
         # метод boundingRect вписывает любую фигуру в прямоугольник и возращает его координаты
 
         self._path = QPainterPath()
         self.extern_rect = parent.boundingRect()
+        print(self.extern_rect)
 
         # Переопределяем переменную, создаем прямоугольник с плав. точкой, с соотв. корд.
         # тут мы задаем изначальные границы зоны
         # нужно переделать на пользовательские координаты
-        self.intern_rect = QRectF(0, 0,
-                                  self.extern_rect.width() / 2,
-                                  self.extern_rect.height() / 2)
+        self.intern_rect = size
 
-        # перемещаем в центр
-        # тестовый функционал
-        self.intern_rect.moveCenter(self.extern_rect.center())
 
-        area_selection(self)
+
+
+
+        self.area = area_selection(self)
         self.create_path()
 
     # возращаем inter_rect
@@ -246,6 +254,21 @@ class CropItem(QGraphicsPathItem):
         self._path.moveTo(self.intern_rect.topLeft())
         self._path.addRect(self.intern_rect)
         self.setPath(self._path)
+
+    def close(self):
+        self.area.close()
+
+    def open(self):
+        self.area.open()
+
+    def return_cords(self):
+        return self.intern_rect.toRect()
+
+
+
+
+
+# окно для моих тестов
 
 
 sys._excepthook = sys.excepthook
@@ -270,8 +293,15 @@ if __name__ == '__main__':
     view.setFixedSize(QPixmap("test.png").size())
     pixmapItem = scene.addPixmap(QPixmap("test.png"))
 
-    cropItem = CropItem(pixmapItem)
+    cropItem_1 = CropItem(pixmapItem)
+    cropItem_2 = CropItem(pixmapItem)
+
+    list_of_areas = [cropItem_1, cropItem_2]
+
 
     view.show()
+    app1 = QApplication(sys.argv)
 
-    sys.exit(app.exec_())
+    app1.exec()
+
+    sys.exit(app1.exec_())
