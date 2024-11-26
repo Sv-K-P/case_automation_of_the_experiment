@@ -5,10 +5,9 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import Qt, QRectF, QPointF
 from PyQt5.Qt import *
 
-from test_for_me import *
+from crop_image import *
 from qtdesign.settings_window import Ui_SettingsWindow
 
-point_filename = 'img/41uu2.png'
 
 
 class GraphicsView(QtWidgets.QGraphicsView):
@@ -36,13 +35,15 @@ class GraphicsView(QtWidgets.QGraphicsView):
 class CropView(GraphicsView):
     """
     Класс для области с обрезаемым изображением, реализация обрезки
+
+    bug: Прямоугольник рисуется без картинки
+    todo: Масштабирование картинки
     """    
     resultChanged = QtCore.pyqtSignal(QtGui.QPixmap)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.flag = True
-        self.point_items = [] # массив с вершинами прямоугольника
         self.selection = QRubberBand(QRubberBand.Rectangle, self)
 
     def mousePressEvent(self, event):

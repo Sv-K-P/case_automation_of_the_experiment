@@ -5,7 +5,9 @@ import sys
 
 
 class ButtonMoveRectItem(QGraphicsRectItem):
-
+    """
+    Обработка перемещения меток, за которые тянуть
+    """
     def __init__(self, position_flags, parent):
         QGraphicsRectItem.__init__(self, -3, -3, 10, 10, parent)
         # настройки цвета кнопки
@@ -69,6 +71,12 @@ class ButtonMoveRectItem(QGraphicsRectItem):
 
 
 class area_selection(QGraphicsItem):
+    """
+    Класс для описания меток за которые тянуть
+
+    :todo Поле хранения миниатюры
+    """
+
     # Флаги отвечают за кнопки, то есть опр. конкретную кнопку
     # Нумирация начинается с верхней кнопки по середине. Далее по часовой стрелке
 
@@ -219,6 +227,9 @@ class area_selection(QGraphicsItem):
 
 
 class CropItem(QGraphicsPathItem):
+    """
+    Класс для описания выделенной области
+    """
     def __init__(self, parent, size):
         QGraphicsPathItem.__init__(self, parent)
         # метод boundingRect вписывает любую фигуру в прямоугольник и возращает его координаты
@@ -264,44 +275,15 @@ class CropItem(QGraphicsPathItem):
     def return_cords(self):
         return self.intern_rect.toRect()
 
-
-
-
-
-# окно для моих тестов
-
+### блок для читабельного вывода ошибок ###
 
 sys._excepthook = sys.excepthook
-
-
 def my_exception_hook(error_type, value, traceback):
     # Print the error and traceback
     print(error_type, value, traceback)
     # Call the normal Exception hook after
     sys._excepthook(error_type, value, traceback)
     sys.exit(1)
-
-
 # Set the exception hook to our wrapping function
 sys.excepthook = my_exception_hook
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    view = QGraphicsView()
-    scene = QGraphicsScene()
-    view.setScene(scene)
-    view.setFixedSize(QPixmap("test.png").size())
-    pixmapItem = scene.addPixmap(QPixmap("test.png"))
-
-    cropItem_1 = CropItem(pixmapItem)
-    cropItem_2 = CropItem(pixmapItem)
-
-    list_of_areas = [cropItem_1, cropItem_2]
-
-
-    view.show()
-    app1 = QApplication(sys.argv)
-
-    app1.exec()
-
-    sys.exit(app1.exec_())
+#############################################
