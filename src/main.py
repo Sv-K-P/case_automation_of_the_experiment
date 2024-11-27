@@ -5,8 +5,11 @@ from PyQt5 import QtWidgets
 
 from qtdesign import start_window
 from connection_list import Device
+from areaList import ListArea
 
 list_connection = [] # необходимо сохранять соответсвие индексов с DeviceList
+
+
 
 class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
     """
@@ -14,11 +17,16 @@ class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
     """
     def __init__(self):
         super().__init__()
-        self.setupUi(self)  # инициализация дизайна
+        self.setupUi(self)  ### инициализация и дополнение дизайна
+        # self.OpenAreaSettings = QtWidgets.QPushButton()
+        # self.horizontalLayout.addWidget(self.OpenAreaSettings)
+        # self.OpenAreaSettings.setText('Выделенные области')
+        ###
 
         self.NewConnection.clicked.connect(self.new_connection) # назначение кнопок
         self.OpenSettings.clicked.connect(self.open_settings)
         self.DeleteConnection.clicked.connect(self.delete_connection)
+        # self.OpenAreaSettings.clicked.connect(self.open_area_settings)
 
         self.DeviceList.itemSelectionChanged.connect(self.selectionChanged) # обработка выбора в QListWidget
         self.idx = 0 # индекс выбранного в данный момент элемента
@@ -50,6 +58,7 @@ class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
         """
         print("open settings for", list_connection[self.idx].name, "...")
         list_connection[self.idx].open_settings()
+
 
     def delete_connection(self):
         """
