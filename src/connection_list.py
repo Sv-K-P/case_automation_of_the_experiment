@@ -14,13 +14,13 @@ class Device():
     def __init__(self, name: str) -> None:
         self.name = name
 
-    def open_settings(self):
+    def open_settings(self, name):
         """
         Вызов окна с настройками
 
         :bug При нажатии кнопки с пустым QListWidget
         """
-        self.window_settings = ExampleSet()
+        self.window_settings = ExampleSet(name=name)
         self.window_settings.show()
     
     def build_connection(self):

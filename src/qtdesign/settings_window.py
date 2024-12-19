@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'settings_window.ui'
+# Form implementation generated from reading ui file 'ui/settings_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -38,6 +38,24 @@ class Ui_SettingsWindow(object):
         self.ChangeNameButton.setObjectName("ChangeNameButton")
         self.horizontalLayout.addWidget(self.ChangeNameButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.label_2 = QtWidgets.QLabel(self.GeneralSettings)
+        self.label_2.setObjectName("label_2")
+        self.horizontalLayout_2.addWidget(self.label_2)
+        self.numberDevice = QtWidgets.QSpinBox(self.GeneralSettings)
+        self.numberDevice.setObjectName("numberDevice")
+        self.horizontalLayout_2.addWidget(self.numberDevice)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.label_3 = QtWidgets.QLabel(self.GeneralSettings)
+        self.label_3.setObjectName("label_3")
+        self.horizontalLayout_4.addWidget(self.label_3)
+        self.changeStorageFile = QtWidgets.QPushButton(self.GeneralSettings)
+        self.changeStorageFile.setObjectName("changeStorageFile")
+        self.horizontalLayout_4.addWidget(self.changeStorageFile)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.TabSettings.addTab(self.GeneralSettings, "")
         self.AreaSettings = QtWidgets.QWidget()
         self.AreaSettings.setMaximumSize(QtCore.QSize(778, 16777215))
@@ -52,13 +70,16 @@ class Ui_SettingsWindow(object):
         SettingsWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(SettingsWindow)
-        self.TabSettings.setCurrentIndex(1)
+        self.TabSettings.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(SettingsWindow)
 
     def retranslateUi(self, SettingsWindow):
         _translate = QtCore.QCoreApplication.translate
         SettingsWindow.setWindowTitle(_translate("SettingsWindow", "MainWindow"))
         self.label.setText(_translate("SettingsWindow", "Имя устройства"))
-        self.ChangeNameButton.setText(_translate("SettingsWindow", "Изменить"))
+        self.ChangeNameButton.setText(_translate("SettingsWindow", "Применить изменения"))
+        self.label_2.setText(_translate("SettingsWindow", "Номер используемой камеры (по умолчанию 0)"))
+        self.label_3.setText(_translate("SettingsWindow", "Файл для записи результатов измерений"))
+        self.changeStorageFile.setText(_translate("SettingsWindow", "Изменить"))
         self.TabSettings.setTabText(self.TabSettings.indexOf(self.GeneralSettings), _translate("SettingsWindow", "Общие"))
         self.TabSettings.setTabText(self.TabSettings.indexOf(self.AreaSettings), _translate("SettingsWindow", "Область интереса"))

@@ -106,9 +106,12 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
     """
     Класс для инициализации окна с настройками устройства
     """
-    def __init__(self):
+    def __init__(self, name):
         super().__init__()
         self.setupUi(self)
+
+        self.deviceName = name # имя устройства, для которого были открыты настройки
+        self.device_idx = -1
 
         self.begin = QtCore.QPoint()
         self.end = QtCore.QPoint()
@@ -140,7 +143,7 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
         _translate = QtCore.QCoreApplication.translate # настройка надписей
         self.LoadOriginalImage.setText(_translate("SettingsWindow", "Получить изображение"))
         self.MakeCroppedImage.setText(_translate("SettingsWindow", "Создать область"))
-        self.DeleteCroppedImage.setText(_translate("SettingsWindow", "Удалить область"))
+        self.DeleteCroppedImage.setText(_translate("SettingsWindow", "Менеджер областей"))
 
         ########################################
 
@@ -160,6 +163,21 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
         self.MakeCroppedImage.clicked.connect(self.left_view.make)
         self.DeleteCroppedImage.clicked.connect(self.open_area_settings)
 
+        self.ChangeNameLine.setText(self.deviceName) # настройка действий для блока общих настроек и значений при запуске
+        self.conf_arr = []
+        with open('config/device_config.csv', mode='r') as f:
+            for s in f.readlines():
+                self.conf_arr.append(s.split(','))
+            self.device_idx = 0 # определяем индекс выбранного устройства в конфиге
+            for i in range(len(self.conf_arr)):
+                if self.conf_arr[i][0] == self.deviceName:
+                    self.device_idx = i
+                    self.numberDevice.setValue(int(self.conf_arr[i][1]))
+            
+
+        self.ChangeNameLine.editingFinished.connect(self.change_name)
+        self.numberDevice.valueChanged.connect(self.change_num_camera)
+        self.changeStorageFile.clicked.connect(self.change_starage_path)
         ######################
  
     def open_area_settings(self):
@@ -171,17 +189,44 @@ class ExampleSet(QtWidgets.QMainWindow, Ui_SettingsWindow):
         for i in range(len(list_area)):
             self.list_area.add_area(list_area[i])
 
+    def change_device_preference(self, field, value):
+        """
+        Перезапись файла настроек
+
+        :param field: Поле в конфиге, которое необходимо изменить
+        :param value: Значение на которое меняем
+        """
+        with open('config/device_config.csv', mode='r') as f:
+            if field == 'name':
+                self.conf_arr[self.device_idx][0] = value
+                self.deviceName = value
+            elif field == 'num_cumera':
+                self.conf_arr[self.device_idx][1] = value
+            elif field == 'storage_path':
+                self.conf_arr[self.device_idx][2] = value
+        with open('config/device_config.csv', mode='w') as f:
+            for c in self.conf_arr:
+                f.write(','.join(c))
+
+    def change_name(self): # вспомогательные функции-обертки для change_device_preference
+        self.change_device_preference(field='name', value=self.ChangeNameLine.text())
+
+    def change_num_camera(self):
+        self.change_device_preference(field='num_cumera', value=str(self.numberDevice.value()))
+
+    def change_starage_path(self):
+        self.change_device_preference(field='storage_path', value=str(self.takeImage()))
+
     @QtCore.pyqtSlot()
     def takeImage(self):
         """
-        Вызов окна для выбора файла (временное решение)
+        Вызов окна для выбора файла
         """
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            "Выберите изображение",
+            "Выберите файл",
             "",
-            "PNG(*.png);;JPEG(*.jpg *.jpeg);;All Files(*.*)"
+            "All Files(*.*)"
         )
         if filename:
-            pixmap = QtGui.QPixmap(filename)
-            self.left_view.set_image(pixmap)
+            return filename

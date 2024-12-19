@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="TabSettings">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="GeneralSettings">
        <property name="cursor">
@@ -42,6 +42,38 @@
           </item>
           <item>
            <widget class="QPushButton" name="ChangeNameButton">
+            <property name="text">
+             <string>Применить изменения</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Номер используемой камеры (по умолчанию 0)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="numberDevice"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Файл для записи результатов измерений</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="changeStorageFile">
             <property name="text">
              <string>Изменить</string>
             </property>

@@ -23,6 +23,14 @@ class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
         # self.OpenAreaSettings.setText('Выделенные области')
         ###
 
+        with open('config/device_config.csv', mode='r') as f:
+            for s in f.readlines():
+                line = s.split(',')
+                device = Device(line[0])
+                device.build_connection()
+                list_connection.append(device)
+                self.DeviceList.addItem(device.name)
+
         self.NewConnection.clicked.connect(self.new_connection) # назначение кнопок
         self.OpenSettings.clicked.connect(self.open_settings)
         self.DeleteConnection.clicked.connect(self.delete_connection)
@@ -52,17 +60,20 @@ class ExampleApp(QtWidgets.QMainWindow, start_window.Ui_MainWindow):
             list_connection.append(device)
             self.DeviceList.addItem(device.name)
 
+            with open('config/device_config.csv', mode='a') as f: # добавление записи в файл настроек
+                f.write(name + ',0,defpath\n')
+
     def open_settings(self):
         """
         Вызов окна настроек для выбранного в QListWidget устройства
         """
         print("open settings for", list_connection[self.idx].name, "...")
-        list_connection[self.idx].open_settings()
+        list_connection[self.idx].open_settings(name=list_connection[self.idx].name)
 
 
     def delete_connection(self):
         """
-        Вызов метода завершения сессии, удаление объекта Device, соответсвующему выбранному устройству
+        Вызов метода завершения сессии, удаление объекта Device, соответствующему выбранному устройству
         """
         if (self.DeviceList.count() > 0):
             if (self.DeviceList.count() - 1 < self.idx):
